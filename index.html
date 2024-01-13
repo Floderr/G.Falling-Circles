@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    #game-container {
+      position: relative;
+    }
+
+    .circle {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: #3498db;
+      cursor: pointer;
+    }
+
+    #score {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  <div id="score">Score: 0</div>
+
+  <script>
+    const gameContainer = document.getElementById('game-container');
+    const scoreElement = document.getElementById('score');
+    let score = 0;
+
+    function createFallingCircle() {
+      const circleElement = document.createElement('div');
+      circleElement.classList.add('circle');
+      circleElement.style.left = `${Math.random() * (window.innerWidth - 150)}px`;
+      circleElement.style.top = '0';
+
+      gameContainer.appendChild(circleElement);
+
+      const fallInterval = setInterval(() => {
+        const top = circleElement.offsetTop;
+        circleElement.style.top = `${top + 5}px`;
+
+        if (top > window.innerHeight) {
+          clearInterval(fallInterval);
+          gameContainer.removeChild(circleElement);
+        }
+      }, 16);
+
+      circleElement.addEventListener('click', function circleClickListener() {
+        clearInterval(fallInterval);
+        gameContainer.removeChild(circleElement);
+        updateScore(1); // Add to the score for caught circles
+        circleElement.removeEventListener('click', circleClickListener);
+        createFallingCircle(); // Spawn a new falling circle
+      });
+    }
+
+    function updateScore(change) {
+      score += change;
+      scoreElement.textContent = `Score: ${score}`;
+    }
+
+    function startGame() {
+      createFallingCircle();
+      setInterval(createFallingCircle, 500); // Spawn a new falling circle every 0.5 seconds (4 times faster)
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
